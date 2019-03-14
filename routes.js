@@ -19,7 +19,6 @@ app.post('/api', (req, res) => {
     res.status(400).send({ error: 'This square has already been clicked!' });
   } else {
     const response = updateGame(currentBoard, clickedSquareId, player);
-    console.log('res', response)
     res.send(response);
   }
 })
