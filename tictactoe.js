@@ -1,3 +1,7 @@
+const isSquareClicked = (currentBoard, clickedSquareId) => {
+  return currentBoard[clickedSquareId] !== null;
+} 
+
 const updateBoard = (currentBoard, clickedSquareId, player) => {
   return currentBoard.map((el, i) => i === clickedSquareId ? player : el)
 }
@@ -12,7 +16,7 @@ const isWinner = (newBoard) => {
     [3, 4, 5],
     [6, 7, 8],
     [0, 3, 6],
-    [1, 4 ,7],
+    [1, 4, 7],
     [2, 5, 8],
     [0, 4, 8],
     [2, 4, 6]
@@ -24,13 +28,14 @@ const isWinner = (newBoard) => {
 };
 
 const updateGame = (currentBoard, clickedSquareId, player) => {
-    const newBoard = updateBoard(currentBoard, clickedSquareId, player);
-    const nextPlayer = whoSNext(player);
-    return isWinner(newBoard) 
-    ? { newBoard, result:`${player} wins the game!`}
+  const newBoard = updateBoard(currentBoard, clickedSquareId, player);
+  const nextPlayer = whoSNext(player);
+  return isWinner(newBoard)
+    ? { newBoard, result: `${player} wins the game!` }
     : { newBoard, nextPlayer };
 };
 
 module.exports = {
   updateGame,
+  isSquareClicked
 }

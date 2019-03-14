@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
-const { updateGame } = require('./tictactoe')
+const { updateGame, isSquareClicked } = require('./tictactoe')
 
 const app = express();
 
@@ -15,8 +15,13 @@ app.use(bodyParser.json());
 
 app.post('/api', (req, res) => {
   const { currentBoard, clickedSquareId, player } = req.body;
-  const response = updateGame(currentBoard, clickedSquareId, player);
-  res.send(response);
+  if (isSquareClicked(currentBoard, clickedSquareId)) {
+    res.status(400).send({ error: 'This square has already been clicked!' });
+  } else {
+    const response = updateGame(currentBoard, clickedSquareId, player);
+    console.log('res', response)
+    res.send(response);
+  }
 })
 
 module.exports = {
