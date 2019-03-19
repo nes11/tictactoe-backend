@@ -8,13 +8,13 @@ const getConnection = async () => {
   return MongoClient.connect(localUrl, { useNewUrlParser: true });
 };
 
-const saveNewBoard = async (newBoard) => {
+const saveNewBoard = async ({ newBoard, moveId }) => {
   try {
     const client = await getConnection();
     const res = await client
       .db(dbName)
       .collection(gameHistory)
-      .insertOne({ newBoard });
+      .insertOne({ newBoard, moveId });
     client.close();
     return res;
   } catch(err) {

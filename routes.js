@@ -1,7 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
-const { updateGame, isSquareClicked } = require('./tictactoe')
+const { updateGame, isSquareClicked } = require('./tictactoe');
+const { deleteAll, saveNewBoard, findMoveById } = require('./database');
 
 const app = express();
 
@@ -13,12 +14,17 @@ app.use(function(req, res, next) {
 
 app.use(bodyParser.json());
 
-app.post('/api', (req, res) => {
+let counter = 0;
+
+app.post('/api/make-move', async (req, res) => {
   const { currentBoard, clickedSquareId, player } = req.body;
   if (isSquareClicked(currentBoard, clickedSquareId)) {
     res.status(400).send({ error: 'This square has already been clicked!' });
   } else {
     const response = updateGame(currentBoard, clickedSquareId, player);
+    const { newBoard } = response;
+    counter += 1;
+    await saveNewBoard({ newBoard, moveId: counter })
     res.send(response);
   }
 })
