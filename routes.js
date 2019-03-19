@@ -26,8 +26,18 @@ app.post('/api/make-move', async (req, res) => {
     counter += 1;
     await saveNewBoard({ newBoard, moveId: counter })
     res.send(response);
+  };
+});
+
+app.post('/api/new-game', async (req, res) => {
+  const response = { 
+    board: [null, null, null, null, null, null, null, null, null],
+    player: 'X'
   }
-})
+  await deleteAll();
+  res.send(response);
+});
+
 
 module.exports = {
   app,
