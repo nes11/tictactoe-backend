@@ -10,7 +10,7 @@ describe('Game History Storage', () => {
       clickedSquareId: 4, 
       player: 'X'
     };
-    await axios.post('http://localhost:4000/api', testReq);
+    await axios.post('http://localhost:4000/api/make-move', testReq);
 
     await axios.post('http://localhost:4000/api/new-game');
 
@@ -20,17 +20,23 @@ describe('Game History Storage', () => {
   })
 
   it('should have the same documents before&after an invalid request', async () => {
-    await deleteAll();
+    await axios.post('http://localhost:4000/api/new-game');
 
-    const testReq = {
+    const testReq1 = {
       currentBoard: [null, null, null, null, null, null, null, null, null], 
       clickedSquareId: 4, 
       player: 'X'
     };
-    await axios.post('http://localhost:4000/api', testReq);
+    const testReq2 = {
+      currentBoard: [null, null, null, null, 'X', null, null, null, null], 
+      clickedSquareId: 4, 
+      player: 'X'
+    }; 
+
+    await axios.post('http://localhost:4000/api/make-move', testReq1);
     const before = await findAll();
     
-    await axios.post('http://localhost:4000/api', testReq);
+    await axios.post('http://localhost:4000/api/make-move', testReq2, { validateStatus: false });
     const after = await findAll();
 
     expect(before.length).to.equal(1);
@@ -39,8 +45,8 @@ describe('Game History Storage', () => {
   })
 
   it('should have one more document after a valid request', async () => {
-    await deleteAll()
-
+    await axios.post('http://localhost:4000/api/new-game');
+    
     const testReq1 = {
       currentBoard: [null, null, null, null, null, null, null, null, null], 
       clickedSquareId: 4, 
@@ -57,13 +63,13 @@ describe('Game History Storage', () => {
       player: 'X'
     };
     
-    await axios.post('http://localhost:4000/api', testReq1);
-    await axios.post('http://localhost:4000/api', testReq2);
+    await axios.post('http://localhost:4000/api/make-move', testReq1);
+    await axios.post('http://localhost:4000/api/make-move', testReq2);
 
     const dbBefore = await findAll();
     const numberOfDocsBefore = dbBefore.length;
 
-    await axios.post('http://localhost:4000/api', testReq3);
+    await axios.post('http://localhost:4000/api/make-move', testReq3);
 
     const dbAfter = await findAll();
     const numberOfDocsAfter = dbAfter.length;
@@ -72,7 +78,7 @@ describe('Game History Storage', () => {
   })
 
   it('should have documents where (# of array elements != null) === move#', async () => {
-    await deleteAll();
+    await axios.post('http://localhost:4000/api/new-game');
 
     const testReq1 = {
       currentBoard: [null, null, null, null, null, null, null, null, null], 
@@ -89,18 +95,19 @@ describe('Game History Storage', () => {
       clickedSquareId: 3, 
       player: 'X'
     };
-    await axios.post('http://localhost:4000/api', testReq1);
-    await axios.post('http://localhost:4000/api', testReq2);
-    await axios.post('http://localhost:4000/api', testReq3);
+
+    await axios.post('http://localhost:4000/api/make-move', testReq1);
+    await axios.post('http://localhost:4000/api/make-move', testReq2);
+    await axios.post('http://localhost:4000/api/make-move', testReq3);
 
     const thirdInGameHistory = await axios.post('http://localhost:4000/api/game-history', { moveId: 3 });
-    const elNotNull = thirdInGameHistory.board.filter(el => el !== null);
+    const elNotNull = thirdInGameHistory.data.newBoard.filter(el => el !== null);
 
-    expect(elNotNull.length).to.equal(thirdInGameHistory.moveId)
+    expect(elNotNull.length).to.equal(thirdInGameHistory.data.moveId)
   })
 
   it('should respond with a specific document when provided with a move #', async () => {
-    await deleteAll()
+    await axios.post('http://localhost:4000/api/new-game');
 
     const testReq1 = {
       currentBoard: [null, null, null, null, null, null, null, null, null], 
@@ -118,12 +125,12 @@ describe('Game History Storage', () => {
       player: 'X'
     };
 
-    await axios.post('http://localhost:4000/api', testReq1);
-    await axios.post('http://localhost:4000/api', testReq2);
-    await axios.post('http://localhost:4000/api', testReq3);
+    await axios.post('http://localhost:4000/api/make-move', testReq1);
+    await axios.post('http://localhost:4000/api/make-move', testReq2);
+    await axios.post('http://localhost:4000/api/make-move', testReq3);
 
     const queriedDoc = await axios.post('http://localhost:4000/api/game-history', { moveId: 3 });
 
-    expect(queriedDoc.moveId).to.equal(3);
+    expect(queriedDoc.data.moveId).to.equal(3);
   })
 });

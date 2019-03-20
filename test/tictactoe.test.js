@@ -8,7 +8,7 @@ describe('tictactoe', () => {
       "clickedSquareId": 2, 
       "player": "O" 
     };
-    const res = await axios.post('http://localhost:4000/api', testReqBody);
+    const res = await axios.post('http://localhost:4000/api/make-move', testReqBody);
     expect(res.status).to.equal(200);
     expect(res.data).to.be.an('object');
     expect(res.data.newBoard).to.deep.equal([null, null, "O", null, null, null, null, null, null]);
@@ -20,7 +20,7 @@ describe('tictactoe', () => {
       "clickedSquareId": 1, 
       "player": "O" 
     };
-    const res = await axios.post('http://localhost:4000/api', testReqBody);
+    const res = await axios.post('http://localhost:4000/api/make-move', testReqBody);
     expect(res.status).to.equal(200);
     expect(res.data).to.be.an('object');
     expect(res.data).to.have.all.keys('newBoard', 'nextPlayer');
@@ -34,7 +34,7 @@ describe('tictactoe', () => {
       "clickedSquareId": 6, 
       "player": "O" 
     };
-    const res = await axios.post('http://localhost:4000/api', testReqBody);
+    const res = await axios.post('http://localhost:4000/api/make-move', testReqBody);
     expect(res.status).to.equal(200);
     expect(res.data).to.be.an('object');
     expect(res.data).to.have.all.keys('newBoard', 'result');
@@ -49,10 +49,10 @@ describe('tictactoe', () => {
       "clickedSquareId": 0, 
       "player": "X" 
     };
-    const res = await axios.post('http://localhost:4000/api', testReqBody, { validateStatus: false });
+    const res = await axios.post('http://localhost:4000/api/make-move', testReqBody, { validateStatus: false });
     expect(res.status).to.equal(400);
     expect(res.data).to.be.an('object');
     expect(res.data).to.include({ error: 'This square has already been clicked!' })
   });
-
+  
 });

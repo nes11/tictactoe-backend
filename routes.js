@@ -16,6 +16,16 @@ app.use(bodyParser.json());
 
 let counter = 0;
 
+app.post('/api/new-game', async (req, res) => {
+  const response = { 
+    board: [null, null, null, null, null, null, null, null, null],
+    player: 'X'
+  }
+  counter = 0;
+  await deleteAll();
+  res.send(response);
+});
+
 app.post('/api/make-move', async (req, res) => {
   const { currentBoard, clickedSquareId, player } = req.body;
   if (isSquareClicked(currentBoard, clickedSquareId)) {
@@ -29,13 +39,10 @@ app.post('/api/make-move', async (req, res) => {
   };
 });
 
-app.post('/api/new-game', async (req, res) => {
-  const response = { 
-    board: [null, null, null, null, null, null, null, null, null],
-    player: 'X'
-  }
-  await deleteAll();
-  res.send(response);
+app.post('/api/game-history', async (req, res) => {
+  const moveId = req.body.moveId;
+  const queriedDoc = await findMoveById(moveId);
+  res.send(queriedDoc);
 });
 
 
