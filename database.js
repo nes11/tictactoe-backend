@@ -8,13 +8,13 @@ const getConnection = async () => {
   return MongoClient.connect(localUrl, { useNewUrlParser: true });
 };
 
-const saveNewBoard = async ({ newBoard, moveId }) => {
+const saveNewBoard = async ({ newBoard, moveId, nextPlayer }) => {
   try {
     const client = await getConnection();
     const res = await client
       .db(dbName)
       .collection(gameHistory)
-      .insertOne({ newBoard, moveId });
+      .insertOne({ newBoard, moveId, nextPlayer });
     client.close();
     return res;
   } catch(err) {
@@ -42,7 +42,7 @@ const findMoveById = async (id) => {
     const res = await client
       .db(dbName)
       .collection(gameHistory)
-      .findOne({ moveId: { $eq: id } });
+      .findOne({ moveId: id });
     client.close();
     return res;
   } catch(err) {
