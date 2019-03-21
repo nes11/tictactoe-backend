@@ -34,6 +34,7 @@ app.post('/api/make-move', async (req, res) => {
     const response = updateGame(currentBoard, clickedSquareId, player);
     const { newBoard, nextPlayer } = response;
     counter += 1;
+    response.moveId = counter;
     await saveNewBoard({ newBoard, moveId: counter, nextPlayer })
     res.send(response);
   };
