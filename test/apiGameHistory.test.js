@@ -25,7 +25,7 @@ describe('/api/game-history', () => {
     const { data: gameAfter2ndMove } = await axios.post('http://localhost:4000/api/make-move', testReq2);
     await axios.post('http://localhost:4000/api/make-move', testReq3);
 
-    const { data: historyAtMove2 } = await axios.post('http://localhost:4000/api/game-history/2');
+    const { data: historyAtMove2 } = await axios.get('http://localhost:4000/api/game-history/2');
 
     expect(historyAtMove2.nextPlayer).to.equal(gameAfter2ndMove.nextPlayer)
     expect(historyAtMove2.newBoard).to.deep.equal(gameAfter2ndMove.newBoard)

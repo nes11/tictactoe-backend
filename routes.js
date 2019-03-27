@@ -1,8 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const uuidv4 = require('uuid/v4')
 
 const { updateGame, isSquareClicked } = require('./tictactoe');
-const { deleteAll, saveNewBoard, findMoveById } = require('./database');
+const { saveNewGame, saveNewBoard, findMoveById } = require('./database');
 
 const app = express();
 
@@ -22,7 +23,8 @@ app.post('/api/new-game', async (req, res) => {
     player: 'X'
   }
   counter = 0;
-  await deleteAll();
+  const uuid = uuidv4();
+  await saveNewGame(uuid);
   res.send(response);
 });
 
@@ -40,7 +42,7 @@ app.post('/api/make-move', async (req, res) => {
   };
 });
 
-app.post('/api/game-history/:moveId', async (req, res) => {
+app.get('/api/game-history/:moveId', async (req, res) => {
   const moveId = parseInt(req.params.moveId);
   const queriedDoc = await findMoveById(moveId);
   res.send(queriedDoc);

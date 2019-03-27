@@ -8,6 +8,20 @@ const getConnection = async () => {
   return MongoClient.connect(localUrl, { useNewUrlParser: true });
 };
 
+const saveNewGame = async (uuid) => {
+  try {
+    const client = await getConnection();
+    const res = await client
+      .db(dbName)
+      .collection(gameHistory)
+      .insertOne({ game: uuid });
+    client.close();
+    return res;
+  } catch(err) {
+    console.log('error', err);
+  }
+};
+
 const saveNewBoard = async ({ newBoard, moveId, nextPlayer }) => {
   try {
     const client = await getConnection();
@@ -53,5 +67,6 @@ const findMoveById = async (id) => {
 module.exports = {
   saveNewBoard,
   deleteAll,
-  findMoveById
+  findMoveById,
+  saveNewGame
 };

@@ -24,7 +24,7 @@ describe('/api/make-move', () => {
     const res = await axios.post('http://localhost:4000/api/make-move', testReqBody);
     expect(res.status).to.equal(200);
     expect(res.data).to.be.an('object');
-    expect(res.data).to.have.all.keys('newBoard', 'nextPlayer');
+    expect(res.data).to.have.all.keys('newBoard', 'nextPlayer', 'moveId');
     expect(res.data.newBoard).to.deep.equal(['O', 'O', null, 'X', null, null, null, null, null]);
     expect(res.data.nextPlayer).to.equal('X');
   });
@@ -38,7 +38,7 @@ describe('/api/make-move', () => {
     const res = await axios.post('http://localhost:4000/api/make-move', testReqBody);
     expect(res.status).to.equal(200);
     expect(res.data).to.be.an('object');
-    expect(res.data).to.have.all.keys('newBoard', 'result');
+    expect(res.data).to.have.all.keys('newBoard', 'result', 'moveId');
     expect(res.data).to.not.have.key('nextPlayer')
     expect(res.data.newBoard).to.deep.equal(["O", null, null, "O", null, null, "O", null, null]);
     expect(res.data.result).to.equal('O wins the game!');
@@ -55,7 +55,7 @@ describe('/api/make-move', () => {
     expect(res.data).to.be.an('object');
     expect(res.data).to.include({ error: 'This square has already been clicked!' })
   });
-  
+
   it('should have the same documents before&after an invalid request', async () => {
     await axios.post('http://localhost:4000/api/new-game');
 
