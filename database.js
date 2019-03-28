@@ -22,33 +22,50 @@ const saveNewGame = async (uuid) => {
   }
 };
 
-const saveNewBoard = async ({ newBoard, moveId, nextPlayer }) => {
-  try {
-    const client = await getConnection();
-    const res = await client
-      .db(dbName)
-      .collection(gameHistory)
-      .insertOne({ newBoard, moveId, nextPlayer });
-    client.close();
-    return res;
-  } catch(err) {
-    console.log('error', err);
-  }
-};
+// const saveNewMove = async ({ newBoard, moveId, nextPlayer }) => {
+//   try {
+//     const client = await getConnection();
+//     const res = await client
+//       .db(dbName)
+//       .collection(gameHistory)
+//       .insertOne({ newBoard, moveId, nextPlayer });
+//     client.close();
+//     return res;
+//   } catch(err) {
+//     console.log('error', err);
+//   }
+// };
 
-const deleteAll = async () => {
+// const deleteAll = async () => {
+//   try {
+//     const client = await getConnection();
+//     const res = await client
+//       .db(dbName)
+//       .collection(gameHistory)
+//       .deleteMany({ });
+//     client.close();
+//     return res;
+//   } catch(err) {
+//     console.log('error', err);
+//   }
+// };
+
+const findandUpdateGame = async ({ newBoard, moveId, nextPlayer, gameId }) => {
   try {
     const client = await getConnection();
     const res = await client
       .db(dbName)
       .collection(gameHistory)
-      .deleteMany({ });
+      .findOneAndUpdate(
+        { game: gameId }, 
+        { '$push': { "moves": { newBoard, nextPlayer, moveId } }}
+      );
     client.close();
     return res;
   } catch(err) {
     console.log('error', err);
   }
-};
+}
 
 const findMoveById = async (id) => {
   try {
@@ -65,8 +82,7 @@ const findMoveById = async (id) => {
 }
 
 module.exports = {
-  saveNewBoard,
-  deleteAll,
-  findMoveById,
-  saveNewGame
+  saveNewGame,
+  findandUpdateGame,
+  findMoveById
 };
