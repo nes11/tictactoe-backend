@@ -39,14 +39,13 @@ app.post('/api/make-move', async (req, res) => {
     counter += 1;
     response.moveId = counter;
     const doc = await findandUpdateGame({ newBoard, moveId: counter, nextPlayer, gameId });
-    console.log(doc)
     res.send(response);
   };
 });
 
-app.get('/api/game-history/:moveId', async (req, res) => {
-  const moveId = parseInt(req.params.moveId);
-  const queriedDoc = await findMoveById(moveId);
+app.get('/api/game-history', async (req, res) => {
+  const { gameId, moveId } = req.body;
+  const queriedDoc = await findMoveById(gameId, moveId);
   res.send(queriedDoc);
 });
 

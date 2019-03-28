@@ -22,34 +22,6 @@ const saveNewGame = async (uuid) => {
   }
 };
 
-// const saveNewMove = async ({ newBoard, moveId, nextPlayer }) => {
-//   try {
-//     const client = await getConnection();
-//     const res = await client
-//       .db(dbName)
-//       .collection(gameHistory)
-//       .insertOne({ newBoard, moveId, nextPlayer });
-//     client.close();
-//     return res;
-//   } catch(err) {
-//     console.log('error', err);
-//   }
-// };
-
-// const deleteAll = async () => {
-//   try {
-//     const client = await getConnection();
-//     const res = await client
-//       .db(dbName)
-//       .collection(gameHistory)
-//       .deleteMany({ });
-//     client.close();
-//     return res;
-//   } catch(err) {
-//     console.log('error', err);
-//   }
-// };
-
 const findandUpdateGame = async ({ newBoard, moveId, nextPlayer, gameId }) => {
   try {
     const client = await getConnection();
@@ -67,15 +39,15 @@ const findandUpdateGame = async ({ newBoard, moveId, nextPlayer, gameId }) => {
   }
 }
 
-const findMoveById = async (id) => {
+const findMoveById = async (gameId, moveId) => {
   try {
     const client = await getConnection();
     const res = await client
       .db(dbName)
       .collection(gameHistory)
-      .findOne({ moveId: id });
+      .findOne({ game: gameId })
     client.close();
-    return res;
+    return res.moves[moveId-1];
   } catch(err) {
     console.log('error', err);
   }
