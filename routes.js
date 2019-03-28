@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const uuidv4 = require('uuid/v4')
 
 const { updateGame, isSquareClicked } = require('./tictactoe');
-const { saveNewGame, findMoveById, findandUpdateGame } = require('./database');
+const { saveNewGame, findMoveById, findAndUpdateGame } = require('./database');
 
 const app = express();
 
@@ -17,6 +17,7 @@ app.use(bodyParser.json());
 
 let counter = 0;
 
+// /api/game/new
 app.post('/api/new-game', async (req, res) => {
   const uuid = uuidv4();
   const response = { 
@@ -29,6 +30,8 @@ app.post('/api/new-game', async (req, res) => {
   res.send(response);
 });
 
+// /api/game/:gameId/move
+
 app.post('/api/make-move', async (req, res) => {
   const { currentBoard, clickedSquareId, player, gameId } = req.body;
   if (isSquareClicked(currentBoard, clickedSquareId)) {
@@ -38,17 +41,16 @@ app.post('/api/make-move', async (req, res) => {
     const { newBoard, nextPlayer } = response;
     counter += 1;
     response.moveId = counter;
-    const doc = await findandUpdateGame({ newBoard, moveId: counter, nextPlayer, gameId });
+    await findAndUpdateGame({ newBoard, nextPlayer, gameId: gameId, moveId: counter });
     res.send(response);
   };
 });
 
-app.get('/api/game-history', async (req, res) => {
-  const { gameId, moveId } = req.body;
+app.get('/api/game/:gameId/move/:moveId', async (req, res) => {
+  const { gameId, moveId } = req.params;
   const queriedDoc = await findMoveById(gameId, moveId);
   res.send(queriedDoc);
 });
-
 
 module.exports = {
   app,

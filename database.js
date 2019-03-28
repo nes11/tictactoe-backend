@@ -22,7 +22,7 @@ const saveNewGame = async (uuid) => {
   }
 };
 
-const findandUpdateGame = async ({ newBoard, moveId, nextPlayer, gameId }) => {
+const findAndUpdateGame = async ({ newBoard, moveId, nextPlayer, gameId }) => {
   try {
     const client = await getConnection();
     const res = await client
@@ -55,6 +55,6 @@ const findMoveById = async (gameId, moveId) => {
 
 module.exports = {
   saveNewGame,
-  findandUpdateGame,
+  findAndUpdateGame,
   findMoveById
 };
