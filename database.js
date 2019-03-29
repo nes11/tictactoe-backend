@@ -23,6 +23,7 @@ const saveNewGame = async (uuid) => {
 };
 
 const findAndUpdateGame = async ({ newBoard, moveId, nextPlayer, gameId }) => {
+    const newBoardStatic = newBoard.map(sq => sq === null ? ' ' : sq)
   try {
     const client = await getConnection();
     const res = await client
@@ -30,7 +31,7 @@ const findAndUpdateGame = async ({ newBoard, moveId, nextPlayer, gameId }) => {
       .collection(gameHistory)
       .findOneAndUpdate(
         { game: gameId }, 
-        { '$push': { "moves": { newBoard, nextPlayer, moveId } }}
+        { '$push': { "moves": { newBoardStatic, nextPlayer, moveId } }}
       );
     client.close();
     return res;
