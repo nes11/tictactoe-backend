@@ -23,7 +23,6 @@ const saveNewGame = async (uuid) => {
 };
 
 const findAndUpdateGame = async ({ newBoard, moveId, nextPlayer, gameId }) => {
-    const newBoardStatic = newBoard.map(sq => sq === null ? ' ' : sq)
   try {
     const client = await getConnection();
     const res = await client
@@ -31,7 +30,7 @@ const findAndUpdateGame = async ({ newBoard, moveId, nextPlayer, gameId }) => {
       .collection(gameHistory)
       .findOneAndUpdate(
         { game: gameId }, 
-        { '$push': { "moves": { newBoardStatic, nextPlayer, moveId } }}
+        { '$push': { "moves": { newBoard, nextPlayer, moveId } }}
       );
     client.close();
     return res;
@@ -39,8 +38,12 @@ const findAndUpdateGame = async ({ newBoard, moveId, nextPlayer, gameId }) => {
     console.log('error', err);
   }
 }
+const makeBoardStatic = (move) => {
+  return { ...move, newBoard: move.newBoard.map(sq => sq === null ? ' ' : sq) };
+}
 
 const findMoveById = async (gameId, moveId) => {
+  console.log(moveId)
   try {
     const client = await getConnection();
     const res = await client
@@ -48,7 +51,9 @@ const findMoveById = async (gameId, moveId) => {
       .collection(gameHistory)
       .findOne({ game: gameId })
     client.close();
-    return res.moves[moveId-1];
+    return moveId == res.moves.length 
+      ? res.moves[moveId-1] 
+      : makeBoardStatic(res.moves[moveId-1]);
   } catch(err) {
     console.log('error', err);
   }
