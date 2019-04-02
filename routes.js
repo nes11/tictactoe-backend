@@ -17,8 +17,7 @@ app.use(bodyParser.json());
 
 let counter = 0;
 
-// /api/game/new
-app.post('/api/new-game', async (req, res) => {
+app.post('/api/game/new', async (req, res) => {
   const uuid = uuidv4();
   const response = { 
     board: [null, null, null, null, null, null, null, null, null],
@@ -30,10 +29,9 @@ app.post('/api/new-game', async (req, res) => {
   res.send(response);
 });
 
-// /api/game/:gameId/move
-
-app.post('/api/make-move', async (req, res) => {
-  const { currentBoard, clickedSquareId, player, gameId } = req.body;
+app.post('/api/game/:gameId/move', async (req, res) => {
+  const gameId = req.params.gameId;
+  const { currentBoard, clickedSquareId, player } = req.body;
   if (isSquareClicked(currentBoard, clickedSquareId)) {
     res.status(400).send({ error: 'This square has already been clicked!' });
   } else {
