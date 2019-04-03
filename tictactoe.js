@@ -1,6 +1,9 @@
-const isSquareClicked = (currentBoard, clickedSquareId) => {
-  return currentBoard[clickedSquareId] !== null;
-} 
+const checkSquareIsAvailable = (currentBoard, clickedSquareId) => {
+  if (currentBoard[clickedSquareId] === ' ') {
+    throw Error('Go back to latest move to resume playing.')
+  } else if (currentBoard[clickedSquareId] === 'X' || currentBoard[clickedSquareId] === 'O') 
+    throw Error('This square is not available. Please choose an empty square.')
+}; 
 
 const updateBoard = (currentBoard, clickedSquareId, player) => {
   return currentBoard.map((el, i) => i === clickedSquareId ? player : el)
@@ -37,5 +40,5 @@ const updateGame = (currentBoard, clickedSquareId, player) => {
 
 module.exports = {
   updateGame,
-  isSquareClicked
+  checkSquareIsAvailable,
 }

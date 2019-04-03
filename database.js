@@ -43,7 +43,6 @@ const makeBoardStatic = (move) => {
 }
 
 const findMoveById = async (gameId, moveId) => {
-  console.log(moveId)
   try {
     const client = await getConnection();
     const res = await client
