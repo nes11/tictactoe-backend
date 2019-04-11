@@ -15,3 +15,8 @@ To build and start the server
 ```javascript
 npm start 
 ```
+
+To test  
+```javascript
+npm test 
+```
