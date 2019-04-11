@@ -50,7 +50,7 @@ const findMoveById = async (gameId, moveId) => {
       .collection(gameHistory)
       .findOne({ game: gameId })
     client.close();
-    return moveId == res.moves.length // res is null 
+    return moveId == res.moves.length  
       ? res.moves[moveId-1] 
       : makeBoardStatic(res.moves[moveId-1]);
   } catch(err) {
