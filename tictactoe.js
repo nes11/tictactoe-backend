@@ -3,7 +3,7 @@ const checkSquareIsAvailable = (currentBoard, clickedSquareId) => {
     throw Error('Please go back to latest move to resume playing.')
   } else if (currentBoard[clickedSquareId] === 'X' || currentBoard[clickedSquareId] === 'O') 
     throw Error('This square is not available. Please choose an empty square.')
-}; 
+}; // implement try/catch here
 
 const updateBoard = (currentBoard, clickedSquareId, player) => {
   return currentBoard.map((el, i) => i === clickedSquareId ? player : el)

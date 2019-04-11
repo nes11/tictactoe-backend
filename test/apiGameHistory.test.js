@@ -1,9 +1,10 @@
 const { expect } = require('chai');
 const axios = require('axios');
 
-describe('/api/game-history', () => {
+describe('/api/game/:gameId/move/:moveId', () => {
   it('should have documents where (# of array elements != null) === move#', async () => {
-    await axios.post('http://localhost:4000/api/new-game');
+    const res = await axios.post('http://localhost:4000/api/game/new');
+    const gameId = res.data.gameId;
 
     const testReq1 = {
       currentBoard: [null, null, null, null, null, null, null, null, null],
@@ -21,11 +22,11 @@ describe('/api/game-history', () => {
       player: 'X'
     };
 
-    await axios.post('http://localhost:4000/api/make-move', testReq1);
-    const { data: gameAfter2ndMove } = await axios.post('http://localhost:4000/api/make-move', testReq2);
-    await axios.post('http://localhost:4000/api/make-move', testReq3);
-
-    const { data: historyAtMove2 } = await axios.get('http://localhost:4000/api/game-history/2');
+    await axios.post(`http://localhost:4000/api/game/${gameId}/move`, testReq1);
+    const { data: gameAfter2ndMove } = await axios.post(`http://localhost:4000/api/game/${gameId}/move`, testReq2);
+    
+    await axios.post(`http://localhost:4000/api/game/${gameId}/move`, testReq3);
+    const { data: historyAtMove2 } = await axios.get(`http://localhost:4000/api/game/${gameId}/move/${moveId}`);
 
     expect(historyAtMove2.nextPlayer).to.equal(gameAfter2ndMove.nextPlayer)
     expect(historyAtMove2.newBoard).to.deep.equal(gameAfter2ndMove.newBoard)

@@ -1,15 +1,15 @@
 const { expect } = require('chai');
 const axios = require('axios');
-const { findAll } = require('./test.helpers');
+const { findAll, findOneGame } = require('./test.helpers');
 
-describe('/api/make-move', () => {
+describe('/api/game/:gameId/move', () => {
   it('returns the correct newBoard array', async () => {
     const testReqBody = {
       "currentBoard": [null, null, null, null, null, null, null, null, null], 
       "clickedSquareId": 2, 
       "player": "O" 
     };
-    const res = await axios.post('http://localhost:4000/api/make-move', testReqBody);
+    const res = await axios.post('http://localhost:4000/api/game/:gameId/move', testReqBody);
     expect(res.status).to.equal(200);
     expect(res.data).to.be.an('object');
     expect(res.data.newBoard).to.deep.equal([null, null, "O", null, null, null, null, null, null]);
@@ -21,7 +21,7 @@ describe('/api/make-move', () => {
       "clickedSquareId": 1, 
       "player": "O" 
     };
-    const res = await axios.post('http://localhost:4000/api/make-move', testReqBody);
+    const res = await axios.post('http://localhost:4000/api/game/:gameId/move', testReqBody);
     expect(res.status).to.equal(200);
     expect(res.data).to.be.an('object');
     expect(res.data).to.have.all.keys('newBoard', 'nextPlayer', 'moveId');
@@ -35,7 +35,7 @@ describe('/api/make-move', () => {
       "clickedSquareId": 6, 
       "player": "O" 
     };
-    const res = await axios.post('http://localhost:4000/api/make-move', testReqBody);
+    const res = await axios.post('http://localhost:4000/api/game/:gameId/move', testReqBody);
     expect(res.status).to.equal(200);
     expect(res.data).to.be.an('object');
     expect(res.data).to.have.all.keys('newBoard', 'result', 'moveId');
@@ -50,14 +50,15 @@ describe('/api/make-move', () => {
       "clickedSquareId": 0, 
       "player": "X" 
     };
-    const res = await axios.post('http://localhost:4000/api/make-move', testReqBody, { validateStatus: false });
+    const res = await axios.post('http://localhost:4000/api/game/:gameId/move', testReqBody, { validateStatus: false });
     expect(res.status).to.equal(400);
     expect(res.data).to.be.an('object');
-    expect(res.data).to.include({ error: 'This square has already been clicked!' })
+    expect(res.data).to.include({ error: 'This square is not available. Please choose an empty square.' })
   });
 
-  it('should have the same documents before&after an invalid request', async () => {
-    await axios.post('http://localhost:4000/api/new-game');
+  it('should not update the game if the request is invalid', async () => {
+    const res = await axios.post('http://localhost:4000/api/game/new');
+    const gameId = res.data.gameId;
 
     const testReq1 = {
       currentBoard: [null, null, null, null, null, null, null, null, null],
@@ -70,19 +71,20 @@ describe('/api/make-move', () => {
       player: 'X'
     };
 
-    await axios.post('http://localhost:4000/api/make-move', testReq1);
-    const before = await findAll();
+    await axios.post(`http://localhost:4000/api/game/${gameId}/move`, testReq1);
+    const docBefore = await findOneGame(gameId);
 
-    await axios.post('http://localhost:4000/api/make-move', testReq2, { validateStatus: false });
-    const after = await findAll();
+    await axios.post(`http://localhost:4000/api/game/${gameId}/move`, testReq2, { validateStatus: false });
+    const docAfter = await findOneGame(gameId);
 
-    expect(before.length).to.equal(1);
-    expect(after.length).to.equal(1);
-    expect(before).to.deep.equal(after);
+    expect(docBefore.moves.length).to.equal(1);
+    expect(docAfter.moves.length).to.equal(1);
+    expect(docBefore).to.deep.equal(docAfter);
   });
 
-  it('should have one more document after a valid request', async () => {
-    await axios.post('http://localhost:4000/api/new-game');
+  it('should had one element to the moves property', async () => {
+    const res = await axios.post('http://localhost:4000/api/game/new');
+    const gameId = res.data.gameId;
 
     const testReq1 = {
       currentBoard: [null, null, null, null, null, null, null, null, null],
@@ -100,17 +102,17 @@ describe('/api/make-move', () => {
       player: 'X'
     };
 
-    await axios.post('http://localhost:4000/api/make-move', testReq1);
-    await axios.post('http://localhost:4000/api/make-move', testReq2);
+    await axios.post(`http://localhost:4000/api/game/${gameId}/move`, testReq1);
+    await axios.post(`http://localhost:4000/api/game/${gameId}/move`, testReq2);
 
-    const dbBefore = await findAll();
-    const numberOfDocsBefore = dbBefore.length;
+    const docBefore = await findOneGame(gameId);
+    const numberOfMovesBefore = docBefore.moves.length;
 
-    await axios.post('http://localhost:4000/api/make-move', testReq3);
+    await axios.post(`http://localhost:4000/api/game/${gameId}/move`, testReq3);
 
-    const dbAfter = await findAll();
-    const numberOfDocsAfter = dbAfter.length;
+    const docAfter = await findOneGame(gameId);
+    const numberOfMovesAfter = docAfter.moves.length;
 
-    expect(numberOfDocsAfter).to.equal(numberOfDocsBefore + 1);
+    expect(numberOfMovesAfter).to.equal(numberOfMovesBefore + 1);
   });
 });

@@ -22,6 +22,21 @@ const findAll = async () => {
   }
 };
 
+const findOneGame = async (gameId) => {
+  try {
+    const client = await getConnection();
+    const res = await client
+      .db(dbName)
+      .collection(gameHistory)
+      .findOne({ game : gameId });
+    client.close();
+    return res;
+  } catch(err) {
+    console.log('error', err);
+  }
+};
+
 module.exports = {
-  findAll
+  findAll,
+  findOneGame,
 }
