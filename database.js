@@ -1,5 +1,5 @@
 const { MongoClient } = require('mongodb');
-const localUrl = 'mongodb://localhost:27017';
+const localUrl = 'mongodb://db:27017'; // when you use compose: mongodb://db:27017
 
 const dbName = 'tictactoe';
 const gameHistory = 'tictactoe-game-history';
